@@ -9,28 +9,32 @@ class Laporan extends CI_Controller
         $this->load->model('Laporan_model'); // Memuat model Laporan_model
         $this->load->library('session'); // Memuat library session jika diperlukan
         $this->load->library('tcpdf'); // Memuat library TCPDF
+
+        if (!$this->session->userdata('logged_in')) {
+            redirect('auth');
+        }
     }
 
     public function index()
     {
         $data['judul'] = 'Laporan';
-    
+
         // Mendapatkan input dari form (jika ada)
         $mulai_tanggal = $this->input->post('mulai_tanggal') ? $this->input->post('mulai_tanggal') : date('Y-m-01');
         $sampai_tanggal = $this->input->post('sampai_tanggal') ? $this->input->post('sampai_tanggal') : date('Y-m-t');
         $filter = $this->input->post('filter') ? $this->input->post('filter') : 'semua';
-    
+
         // Mendapatkan id_pengguna dari session
         $id_pengguna = $this->session->userdata('id_pengguna');
-    
+
         // Memanggil model untuk mengambil data laporan sesuai filter dan id_pengguna
         $data['laporan'] = $this->Laporan_model->get_laporan($mulai_tanggal, $sampai_tanggal, $filter, $id_pengguna);
-    
+
         // Menyimpan tanggal untuk ditampilkan di view
         $data['mulai_tanggal'] = $mulai_tanggal;
         $data['sampai_tanggal'] = $sampai_tanggal;
         $data['filter'] = $filter;
-    
+
         // Menampilkan tampilan laporan
         $this->load->view('template/header', $data);
         $this->load->view('laporan/index', $data);
@@ -64,7 +68,7 @@ class Laporan extends CI_Controller
         // Judul
         $html = '<h1>Laporan Pemasukkan & Pengeluaran</h1>';
         $html .= '<p>Menampilkan laporan dari ' . date('d-m-Y', strtotime($mulai_tanggal)) . ' hingga ' . date('d-m-Y', strtotime($sampai_tanggal)) . '</p>';
-        
+
         // Tabel
         $html .= '<table border="1" cellpadding="4">
                     <thead>
@@ -105,7 +109,7 @@ class Laporan extends CI_Controller
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Bersihkan buffer output sebelum mengirim PDF
-        ob_clean(); 
+        ob_clean();
         // Output PDF ke browser
         $pdf->Output('laporan_pemasukan_pengeluaran.pdf', 'D'); // 'D' untuk download
     }

@@ -7,6 +7,10 @@ class Kategori extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Kategori_model');
+
+        if ($this->session->userdata('logged_in')) {
+            redirect(uri: 'auth');
+        };
     }
 
     public function index()
@@ -17,6 +21,6 @@ class Kategori extends CI_Controller
         // Load view dengan data
         $this->load->view('template/header', $data);
         $this->load->view('kategori/index', $data);
-        $this->load->view('template/footer', );
+        $this->load->view('template/footer',);
     }
 }

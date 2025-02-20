@@ -9,6 +9,10 @@ class Pengguna extends CI_Controller
         $this->load->model('Pengguna_model');
         $this->load->library('form_validation');
         $this->load->library('upload');
+
+        if (!$this->session->userdata('logged_in')) {
+            redirect('auth');
+        }
     }
 
     public function index()
@@ -17,19 +21,18 @@ class Pengguna extends CI_Controller
         $id_pengguna = $this->session->userdata('id_pengguna');
         $data['judul'] = 'Data Pengguna';
 
-        // Pastikan id_pengguna tersedia
+
         if (!$id_pengguna) {
-            redirect('login'); // Ganti dengan route login Anda
+            redirect('login');
         }
 
-        // Ambil data pengguna berdasarkan ID
         $data['pengguna'] = $this->Pengguna_model->get_pengguna_by_id($id_pengguna);
+
 
         // Ambil gambar dan nama pengguna
         $data['user_images'] = $data['pengguna']['user_images'] ?? 'default.png'; // Gambar pengguna
         $data['nama_pengguna'] = $data['pengguna']['nama_pengguna'] ?? 'User'; // Nama pengguna
 
-        // Set aturan validasi form
         $this->form_validation->set_rules('nama_pengguna', 'Username', 'required|trim');
         $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email');
 
@@ -56,7 +59,7 @@ class Pengguna extends CI_Controller
                 $this->upload->initialize($config);
 
                 if ($this->upload->do_upload('gambar')) {
-                    // Jika gambar berhasil diupload
+                    // Jika  gambar berhasil diupload
                     $upload_data = $this->upload->data();
                     $update_data['gambar'] = $upload_data['file_name']; // Simpan nama file gambar
 

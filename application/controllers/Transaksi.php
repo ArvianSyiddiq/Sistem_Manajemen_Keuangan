@@ -9,6 +9,10 @@ class Transaksi extends CI_Controller
 
         $this->load->database();
         $this->load->model('Transaksi_model');
+
+        if (!$this->session->userdata('logged_in')) {
+            redirect('auth');
+        }
     }
 
     public function index()
@@ -22,7 +26,7 @@ class Transaksi extends CI_Controller
         // Load view dengan data
         $this->load->view('template/header', $data);
         $this->load->view('transaksi/index', $data);
-        $this->load->view('template/footer', );
+        $this->load->view('template/footer',);
     }
 
     public function filter()
@@ -56,7 +60,6 @@ class Transaksi extends CI_Controller
             );
             // Simpan ke tabel pemasukan
             $this->Transaksi_model->insert_pemasukan($data_pemasukan);
-
         } elseif ($tipe_transaksi === 'expense') {
             $data_pengeluaran = array(
                 'id_pengguna' => $id_pengguna,
@@ -110,14 +113,14 @@ class Transaksi extends CI_Controller
         $tanggal = $this->input->post('tanggal_transaksi');
         $deskripsi = $this->input->post('deskripsi');
         $tipe_transaksi = $this->input->post('tipe_transaksi');
-    
+
         $data_transaksi = array(
             'nominal_keluar' => $nominal,
             'tanggal_transaksi' => $tanggal,
             'deskripsi' => $deskripsi,
             'tipe_transaksi' => $tipe_transaksi
         );
-    
+
         // Update transaksi di database
         if ($this->Transaksi_model->update_transaksi($id_transaksi, $data_transaksi)) {
             $this->session->set_flashdata('success', 'Transaksi berhasil diperbarui.');
@@ -125,10 +128,10 @@ class Transaksi extends CI_Controller
             $this->session->set_flashdata('error', 'Transaksi gagal diperbarui.'); // Error message
             log_message('error', 'Update failed for transaction ID: ' . $id_transaksi); // Log the error
         }
-    
+
         redirect('transaksi'); // Redirect ke halaman transaksi
     }
-    
+
 
 
 
@@ -156,8 +159,4 @@ class Transaksi extends CI_Controller
 
         redirect('transaksi/index'); // Redirect ke halaman transaksi
     }
-
-
-
-
 }

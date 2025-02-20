@@ -8,6 +8,10 @@ class Password extends CI_Controller
     parent::__construct();
     $this->load->model('Password_model');
     $this->load->library('session');
+
+    if (!$this->session->userdata('logged_in')) {
+      redirect('auth');
+    }
   }
 
   public function index()
